@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hitwicket Product Assignment | PM Intern Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: "Intern's Desk" - Clean Slate, Professional Indigo, and Highlighter Yellow for key insights. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        /* Chart Container Styling - MANDATORY */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .nav-item.active {
+            border-bottom: 4px solid #FACC15; /* Yellow-400 */
+            color: #ffffff;
+        }
+
+        .scout-card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+
+        /* Image Placeholder Styling */
+        .img-placeholder {
+            background-color: #e2e8f0; /* slate-200 */
+            border: 2px dashed #94a3b8; /* slate-400 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b; /* slate-500 */
+            font-weight: 600;
+            text-align: center;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            min-height: 250px;
+            transition: all 0.3s ease;
+        }
+        .img-placeholder:hover {
+            border-color: #6366f1; /* indigo-500 */
+            color: #4f46e5; /* indigo-600 */
+            background-color: #e0e7ff; /* indigo-50 */
+        }
+
+        /* Assignment Prompt Box Styling */
+        .assignment-box {
+            background-color: #fffbeb; /* amber-50 */
+            border-left: 4px solid #f59e0b; /* amber-500 */
+            padding: 1rem;
+            margin-bottom: 2rem;
+            color: #92400e; /* amber-800 */
+            font-size: 0.95rem;
+        }
+        .assignment-label {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #b45309; /* amber-700 */
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c7c7cc;
+            border-radius: 4px;
+        }
+        
+        /* Animation for tab switching */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <!-- Application Structure Plan: 
+         1. Dashboard: Immediate "Executive Summary".
+         2. Tabs Q2, Q3, Q4: Updated SWOT with "Advanced" research insights (AR, Personas, PUBG benchmark).
+         3. Tone: Professional yet personal ("I observed", "My Suggestion").
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Navigation -->
+    <nav class="bg-indigo-900 text-slate-300 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-white text-xl font-extrabold tracking-wider">HITWICKET <span class="text-yellow-400">REPORT</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active px-3 py-2 rounded-md text-sm font-medium hover:text-white transition-colors">Overview</button>
+                        <button onclick="switchTab('churn')" id="nav-churn" class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:text-white transition-colors">Q2: The Fix</button>
+                        <button onclick="switchTab('retention')" id="nav-retention" class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:text-white transition-colors">Q3: The Hook</button>
+                        <button onclick="switchTab('swot')" id="nav-swot" class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:text-white transition-colors">Q4: Market</button>
+                        <button onclick="switchTab('research')" id="nav-research" class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:text-white transition-colors">User Notes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden bg-indigo-800 flex justify-around p-2">
+             <button onclick="switchTab('dashboard')" class="text-xs text-white">Home</button>
+             <button onclick="switchTab('churn')" class="text-xs text-white">Q2</button>
+             <button onclick="switchTab('retention')" class="text-xs text-white">Q3</button>
+             <button onclick="switchTab('swot')" class="text-xs text-white">Q4</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
+
+        <!-- VIEW: DASHBOARD -->
+        <div id="view-dashboard" class="fade-in">
+            <header class="text-center mb-10">
+                <div class="inline-block bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full mb-2">PM INTERN ASSIGNMENT</div>
+                <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                    Product Strategy & Analysis
+                </h1>
+                <p class="max-w-xl mx-auto mt-3 text-lg text-slate-500">
+                    My proposal to reduce early churn and improve 7-day retention based on real user testing and market research.
+                </p>
+                <div class="mt-4 text-black font-mono">
+                    Applicant: <a href="https://cloud-resume.jainharsh.tech/" style="text-decoration: none; color: blue; ;">Harsh Jain</a> 22BET10020 &bull; College: VIT University &bull; Date: Nov 30, 2025 
+                </div>
+            </header>
+
+            <!-- My Testing Process Block -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+                <h2 class="text-lg font-bold text-indigo-900 mb-4 flex items-center">
+                    <span class="bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs mr-2">!</span> 
+                    How I Did The Testing
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <strong class="block text-slate-900 mb-1">1. The Setup</strong>
+                        <p class="text-slate-600">I asked 5 different people (friends and family) to play Hitwicket on my phone.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <strong class="block text-slate-900 mb-1">2. The Rule</strong>
+                        <p class="text-slate-600">I sat silently and watched. I did not help them, even when they got stuck.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <strong class="block text-slate-900 mb-1">3. The Data</strong>
+                        <p class="text-slate-600">I took notes on exactly when they frowned, sighed, or asked "What do I do now?"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div onclick="switchTab('churn')" class="bg-white overflow-hidden shadow rounded-lg cursor-pointer hover:shadow-xl transition-shadow border-t-4 border-red-500">
+                    <div class="px-4 py-5 sm:p-6">
+                        <dt class="text-sm font-medium text-slate-500 truncate">Question 2</dt>
+                        <dd class="mt-1 text-2xl font-bold text-slate-900">Reduce 15-Min Churn</dd>
+                        <p class="mt-2 text-sm text-slate-600">Proposal: <strong>"Redeem All" Button</strong> to fix dashboard clutter.</p>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div onclick="switchTab('retention')" class="bg-white overflow-hidden shadow rounded-lg cursor-pointer hover:shadow-xl transition-shadow border-t-4 border-yellow-400">
+                    <div class="px-4 py-5 sm:p-6">
+                        <dt class="text-sm font-medium text-slate-500 truncate">Question 3</dt>
+                        <dd class="mt-1 text-2xl font-bold text-slate-900">Drive 7-Day Login</dd>
+                        <p class="mt-2 text-sm text-slate-600">Proposal: <strong>Rookie Rivalry Arc</strong> & Customization rewards.</p>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div onclick="switchTab('swot')" class="bg-white overflow-hidden shadow rounded-lg cursor-pointer hover:shadow-xl transition-shadow border-t-4 border-blue-500">
+                    <div class="px-4 py-5 sm:p-6">
+                        <dt class="text-sm font-medium text-slate-500 truncate">Question 4</dt>
+                        <dd class="mt-1 text-2xl font-bold text-slate-900">Market SWOT</dd>
+                        <p class="mt-2 text-sm text-slate-600">Strategic analysis comparing Hitwicket to PUBG and WCC2.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: CHURN (Q2) -->
+        <div id="view-churn" class="hidden fade-in">
+            
+            <div class="assignment-box rounded-lg shadow-sm">
+                <span class="assignment-label">Assignment Question 2</span>
+                <p>Play Hitwicket for at least an hour over two days. Now, suggest a Feature to reduce churn in the first 15 min of gameplay. How will you go about arriving at a solution? Think out of the box.</p>
+            </div>
+
+            <div class="border-b border-slate-200 pb-5 mb-8">
+                <h2 class="text-2xl font-bold leading-6 text-indigo-900">Proposed Solution: "Redeem All" & Notification Hub</h2>
+                <p class="mt-2 text-slate-600 max-w-4xl">
+                    <strong>Observation:</strong> Daily rewards are cluttered in different locations. My Dad (50) spent half his time clicking red dots instead of playing the game. This breaks the "flow" immediately after the tutorial.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                         <h3 class="text-lg font-bold text-slate-800 mb-3">The Evidence: UI Clutter</h3>
+                         <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                            During testing, I noticed users were overwhelmed by the sheer number of notifications. 
+                            <br><br>
+                            As seen in the screenshot, there are "Claim" indicators (Red Dots) scattered across <strong>Store</strong>, <strong>Quests</strong>, <strong>Events</strong>, and <strong>Daily Goals</strong> simultaneously.
+                         </p>
+                         <ul class="text-sm text-red-600 space-y-1 font-semibold">
+                             <li>&times; Too many clicks to start playing</li>
+                             <li>&times; Users forget where they saw the reward</li>
+                             <li>&times; Feels like "Admin Work", not a game</li>
+                         </ul>
+                    </div>
+                    
+                    <!-- IMAGE PLACEHOLDER 1 -->
+                    <div class="relative">
+                        <div class="img-placeholder">
+                            <div>
+                                <span class="text-4xl block mb-2"></span>
+                                <span><img src="img/1.jpg" alt=""></span>
+                                <p class="text-xs font-normal mt-2 text-slate-400"></p>
+                            </div>
+                        </div>
+                        <p class="text-center text-xs text-slate-400 mt-2 italic">Figure A: Current Home Screen showing notification overload.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Visualization Column -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">Where does the first 15 mins go?</h3>
+                    <div class="chart-container">
+                        <canvas id="churnChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-slate-500 mt-4">
+                        *Based on my stopwatch timings of 5 users.
+                    </p>
+                </div>
+
+                <!-- Solution Column -->
+                <div class="space-y-6">
+                    <div class="bg-indigo-50 p-6 rounded-lg border-l-4 border-indigo-600">
+                        <h3 class="text-lg font-bold text-indigo-900 mb-2">My Idea: "Notification Tab" Center</h3>
+                        <p class="text-slate-700 mb-4">
+                            Store all prize and token redeems at <strong>one place</strong> in the Notification Tab to make the dashboard less filled up.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold">1</div>
+                            <div class="ml-4">
+                                <h4 class="text-md font-bold text-slate-900">Declutter the UI</h4>
+                                <p class="text-sm text-slate-600">Remove the scattered red dots. Move everything to a single "Inbox".</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold">2</div>
+                            <div class="ml-4">
+                                <h4 class="text-md font-bold text-slate-900">The "Redeem All" Button</h4>
+                                <p class="text-sm text-slate-600">Give users a single <strong>"Redeem All"</strong> button. One click to collect everything instead of 10 clicks.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: RETENTION (Q3) -->
+        <div id="view-retention" class="hidden fade-in">
+            
+            <div class="assignment-box rounded-lg shadow-sm">
+                <span class="assignment-label">Assignment Question 3</span>
+                <p>Play Hitwicket for at least an hour over two days. Now, Design a Feature to get a user to login everyday for the first 7 days. Think out of the box.</p>
+            </div>
+
+            <div class="border-b border-slate-200 pb-5 mb-8">
+                <h2 class="text-2xl font-bold leading-6 text-indigo-900">Proposed Solution: The "Rookie Rivalry Arc"</h2>
+                <p class="mt-2 text-slate-600">
+                    <strong>Observation:</strong> Players want to attack their friends and express themselves (like in Bitmoji). The current system feels a bit lonely in the first week.
+                </p>
+            </div>
+
+            <!-- Image Section for Retention Feature -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <!-- IMAGE PLACEHOLDER 2 -->
+                    <div class="relative order-2 lg:order-1">
+                        <div class="img-placeholder">
+                            <div>
+                                <span class="text-4xl block mb-2"></span>
+                                <span><img src="img/2.jpg" alt=""></span>
+                                <p class="text-xs font-normal mt-2 text-slate-400"></p>
+                            </div>
+                        </div>
+                        <p class="text-center text-xs text-slate-400 mt-2 italic">Figure B: Concept for "Doodle Captain Creator" & Rivalry Screen.</p>
+                    </div>
+
+                    <div class="order-1 lg:order-2">
+                         <h3 class="text-lg font-bold text-slate-800 mb-3">The Vision: Personalization</h3>
+                         <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                            Users (especially the 16-22 age group) loved the Doodle art style but wished they could make the player look like <em>them</em>. 
+                            <br><br>
+                            I propose adding a <strong>"Doodle Creator"</strong> where they can upload or build a Bitmoji-style avatar. We can then use this avatar to "Taunt" friends in the Co-op mode.
+                         </p>
+                         <ul class="text-sm text-indigo-600 space-y-1 font-semibold">
+                             <li>&check; Higher Emotional Investment</li>
+                             <li>&check; Viral Sharing Potential ("Look at my captain!")</li>
+                             <li>&check; Perfect reward for Day 7 Login</li>
+                         </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Visualization -->
+            <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200 mb-8">
+                <h3 class="text-lg font-bold text-indigo-900 mb-6 text-center">Implementation: 7-Day Journey</h3>
+                <p class="text-center text-sm text-slate-500 mb-6 max-w-2xl mx-auto">
+                    Instead of a boring "Day 1 Bonus", we give them a specific <strong>Rival</strong> (Bot or Player). If they beat this Rival over 7 days, they win a cool prize.
+                </p>
+                
+                <div class="relative mt-8">
+                    <!-- Line -->
+                    <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-slate-200 -translate-y-1/2 z-0"></div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
+                        <!-- Step 1 -->
+                        <div class="bg-white p-4 rounded border-2 border-slate-300 text-center">
+                            <div class="inline-block p-1 px-3 rounded-full bg-indigo-100 text-indigo-700 font-bold mb-2 text-xs">Day 1</div>
+                            <h4 class="font-bold text-slate-900">The Challenge</h4>
+                            <p class="text-xs text-slate-500 mt-1">"Captain X thinks you're a fluke. Prove him wrong."</p>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="bg-white p-4 rounded border-2 border-slate-300 text-center">
+                            <div class="inline-block p-1 px-3 rounded-full bg-indigo-100 text-indigo-700 font-bold mb-2 text-xs">Days 2-6</div>
+                            <h4 class="font-bold text-slate-900">The Battle</h4>
+                            <p class="text-xs text-slate-500 mt-1">Daily tasks to beat the Rival. <strong>Attack Friends</strong> feature unlocks here.</p>
+                        </div>
+                        <!-- Prize -->
+                        <div class="bg-yellow-50 p-4 rounded border-2 border-yellow-400 text-center shadow-md">
+                            <div class="inline-block p-1 px-3 rounded-full bg-yellow-400 text-yellow-900 font-bold mb-2 text-xs">Day 7 Prize</div>
+                            <h4 class="font-bold text-slate-900">Upload Your Art</h4>
+                            <p class="text-xs text-slate-600 mt-1">Unlock ability to <strong>upload your own Doodle/Bitmoji</strong> as the captain.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Co-op Note -->
+                <div class="mt-6 bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                     <h4 class="text-sm font-bold text-indigo-900">Future Expansion: Team Play</h4>
+                     <p class="text-xs text-slate-600">Adding a feature where <strong>2-3 players can play together</strong> (Co-op mode) to challenge strong AI teams.</p>
+                </div>
+            </div>
+
+            <!-- Psychology Chart -->
+            <!-- <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 max-w-3xl mx-auto">
+                 <h3 class="text-lg font-bold text-slate-800 mb-2 text-center">Expected Result</h3>
+                 <p class="text-center text-xs text-slate-500 mb-4">Why this works better than normal login bonuses</p>
+                 <div class="chart-container">
+                    <canvas id="retentionChart"></canvas>
+                 </div>
+            </div> -->
+        </div>
+
+        <!-- VIEW: SWOT (Q4) -->
+        <div id="view-swot" class="hidden fade-in">
+             
+            <div class="assignment-box rounded-lg shadow-sm">
+                <span class="assignment-label">Assignment Question 4</span>
+                <p>Present a SWOT analysis of Hitwicket as a market opportunity in one slide.</p>
+            </div>
+
+            <div class="border-b border-slate-200 pb-5 mb-8">
+                <h2 class="text-2xl font-bold leading-6 text-indigo-900">Proposed Solution: SWOT Analysis</h2>
+                <p class="mt-2 text-slate-600">
+                    Comparing Hitwicket to WCC2, Sachin Saga, and Nazara games based on user feedback and market research.
+                </p>
+            </div>
+
+            <!-- STRATEGIC INSIGHT BOX -->
+            <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-600 mb-6">
+                 <h4 class="text-sm font-bold text-purple-900"> My Strategic Find</h4>
+                 <p class="text-xs text-purple-700 mt-1">
+                     I researched how other games increase engagement. A study on "Hitwicket AR Adventure" highlighted using <strong>Player Personas</strong> (Socializer vs Strategist). I've integrated this thinking below—we can't just build features; we need to build for specific personas.
+                 </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Strengths -->
+                <div class="bg-green-50 p-6 rounded-xl border-t-4 border-green-500">
+                    <h3 class="text-lg font-bold text-green-800 mb-3">Strengths (What we do well)</h3>
+                    <ul class="space-y-2">
+                        <li class="text-sm text-green-900">&bull; <strong>Doodle Art Style:</strong> Unique visual identity vs 3D clones.</li>
+                        <li class="text-sm text-green-900">&bull; <strong>Strong Backing:</strong> Backed by Harsha Bhogle & recognized by Tim Cook (High Credibility).</li>
+                        <li class="text-sm text-green-900">&bull; <strong>Strategic Depth:</strong> % Prediction rate appeals to thinkers, not just clickers.</li>
+                    </ul>
+                </div>
+
+                <!-- Weaknesses -->
+                <div class="bg-red-50 p-6 rounded-xl border-t-4 border-red-500">
+                    <h3 class="text-lg font-bold text-red-800 mb-3">Weaknesses (What we need to fix)</h3>
+                    <ul class="space-y-2">
+                        <li class="text-sm text-red-900">&bull; <strong>No Bowling:</strong> Alienates "Sim" purists who want manual control.</li>
+                        <li class="text-sm text-red-900">&bull; <strong>Social Depth:</strong> Missing deep social structures like "Guilds" or "Clans" that keep PUBG players loyal.</li>
+                        <li class="text-sm text-red-900">&bull; <strong>UI Clutter:</strong> Messy dashboard causes friction (Q2).</li>
+                    </ul>
+                </div>
+
+                <!-- Opportunities -->
+                <div class="bg-blue-50 p-6 rounded-xl border-t-4 border-blue-500">
+                    <h3 class="text-lg font-bold text-blue-800 mb-3">Opportunities (Where to grow)</h3>
+                    <ul class="space-y-2">
+                        <li class="text-sm text-blue-900">&bull; <strong>Benchmarking PUBG:</strong> Introduce <strong>"Cricket Clubs"</strong> (Clans) and an <strong>"Elite Pass"</strong> (Battle Pass) for monetization.</li>
+                        <li class="text-sm text-blue-900">&bull; <strong>Tech Innovation:</strong> Experiment with <strong>AR (Augmented Reality)</strong> events to bring the stadium to the living room.</li>
+                        <li class="text-sm text-blue-900">&bull; <strong>Team Play:</strong> 2-3 Player Co-op mode.</li>
+                        <li class="text-sm text-blue-900">&bull; <strong>Bitmoji:</strong> Personalized player Bitmoji.</li>
+                    </ul>
+                </div>
+
+                <!-- Threats -->
+                <div class="bg-slate-100 p-6 rounded-xl border-t-4 border-slate-500">
+                    <h3 class="text-lg font-bold text-slate-700 mb-3">Threats (Watch out for)</h3>
+                    <ul class="space-y-2">
+                        <li class="text-sm text-slate-800">&bull; <strong>Feature Fatigue:</strong> Competitors like Nazara are adding "Meta" layers fast. If we don't add social depth, users may leave.</li>
+                        <li class="text-sm text-slate-800">&bull; <strong>Real Money Gaming:</strong> Betting apps during IPL steal attention.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: RESEARCH (APPENDIX) -->
+        <div id="view-research" class="hidden fade-in">
+             <div class="border-b border-slate-200 pb-5 mb-8">
+                <h2 class="text-2xl font-bold leading-6 text-indigo-900">Research Notes</h2>
+                <p class="mt-2 text-slate-600">
+                    Here are the raw notes from the 5 people I watched play the game.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="user-cards-container">
+                <!-- Cards injected via JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm">Created by Harsh Jain for Hitwicket Internship Application</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Data Storage ---
+        const users = [
+            {
+                name: "User 1: Me",
+                role: "The Applicant",
+                age: "20s",
+                desc: "Played WCC2/Nazara. Good concept, likes Doodle art. A strategy game disguised as cricket.",
+                pain: "Dashboard is messy. Needs 'Redeem All'. No Bowling.",
+                verdict: "LIKED IT",
+                verdictColor: "text-green-600",
+                icon: "🎓"
+            },
+            {
+                name: "User 2: My Dad",
+                role: "Non-Gamer",
+                age: "50",
+                desc: "A virtual cricket manager where you make decisions.",
+                pain: "Couldn't find the 'Play' button because of red marks and constant popups.",
+                verdict: "QUIT EARLY",
+                verdictColor: "text-red-600",
+                icon: "👔"
+            },
+            {
+                name: "User 3: Brother",
+                role: "Gamer",
+                age: "18",
+                desc: "Clash Royale but for Cricket.",
+                pain: "Wanted to control the bowler.",
+                verdict: "MAYBE",
+                verdictColor: "text-yellow-600",
+                icon: "🎮"
+            },
+            {
+                name: "User 4: Friend",
+                role: "Social",
+                age: "22",
+                desc: "A casual time-killer where you build a team.",
+                pain: "Only wants to play if we play together.",
+                verdict: "RETAINED",
+                verdictColor: "text-green-600",
+                icon: "📱"
+            },
+            {
+                name: "User 5: Cousin",
+                role: "Student",
+                age: "16",
+                desc: "Anime Cricket :)",
+                pain: "Understood the mechanics quickly but was frustrated by energy timers",
+                verdict: "ADDICTED",
+                verdictColor: "text-green-600",
+                icon: "🎒"
+            }
+        ];
+
+        // --- Core Interaction Handling ---
+        function switchTab(tabId) {
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + tabId).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const activeNav = document.getElementById('nav-' + tabId);
+            if(activeNav) activeNav.classList.add('active');
+
+            window.scrollTo(0,0);
+        }
+
+        // --- Component Generation ---
+        function renderUserCards() {
+            const container = document.getElementById('user-cards-container');
+            container.innerHTML = users.map(user => `
+                <div class="scout-card bg-white rounded-xl shadow p-6 border border-slate-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="text-3xl">${user.icon}</span>
+                            <h3 class="text-lg font-bold text-indigo-900 mt-2">${user.name}</h3>
+                            <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">${user.age} yrs</span>
+                        </div>
+                        <span class="text-xs font-bold ${user.verdictColor} border border-current px-2 py-1 rounded">
+                            ${user.verdict}
+                        </span>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <p><strong class="text-slate-700">They said:</strong> "${user.desc}"</p>
+                        <p class="bg-red-50 p-2 rounded text-red-800"><strong class="text-red-900">Problem:</strong> ${user.pain}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- Visualization Rendering (Chart.js) ---
+        function initCharts() {
+            // 1. Churn Chart (Donut)
+            const ctxChurn = document.getElementById('churnChart').getContext('2d');
+            new Chart(ctxChurn, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Actually Playing', 'Clearing Red Dots', 'Loading'],
+                    datasets: [{
+                        data: [50, 40, 10], 
+                        backgroundColor: ['#4F46E5', '#EF4444', '#E2E8F0'], 
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: { display: true, text: 'Time Spent in First 15 Mins' }
+                    }
+                }
+            });
+
+            // 2. Retention Chart (Line)
+            const ctxRetention = document.getElementById('retentionChart').getContext('2d');
+            new Chart(ctxRetention, {
+                type: 'line',
+                data: {
+                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+                    datasets: [
+                        {
+                            label: 'With Rivalry Arc (My Idea)',
+                            data: [100, 80, 70, 65, 60, 58, 55], 
+                            borderColor: '#4F46E5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Normal Drop-off',
+                            data: [100, 40, 25, 15, 10, 8, 5], 
+                            borderColor: '#94A3B8',
+                            borderDash: [5, 5],
+                            tension: 0.3,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + '% Players';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: '% Players Returning' }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderUserCards();
+            initCharts();
+            switchTab('dashboard');
+        });
+
+    </script>
+</body>
+</html>
